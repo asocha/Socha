@@ -6,7 +6,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity"
+    tools:context=".About"
     android:orientation="vertical"
     android:gravity="center" >
 
@@ -16,32 +16,18 @@
         android:textSize="40sp"
         android:text="@string/title" />
     
-    <Button android:id="@+id/start"
-	    android:layout_width="110dp"
-	    android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-	    android:text="@string/start"
-	    android:background="#600F" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text="@string/developer"
+        android:layout_marginTop="40dp" />
     
-    <Button android:id="@+id/scores"
+    <Button android:id="@+id/back"
 	    android:layout_width="110dp"
 	    android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-	    android:text="@string/scores"
-	    android:background="#600F" />
-    
-    <Button android:id="@+id/about"
-	    android:layout_width="110dp"
-	    android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-	    android:text="@string/about"
-	    android:background="#600F" />
-    
-    <Button android:id="@+id/quit"
-	    android:layout_width="110dp"
-	    android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-	    android:text="@string/quit"
+        android:layout_marginTop="70dp"
+	    android:text="@string/back"
 	    android:background="#600F" />
 
 </LinearLayout>

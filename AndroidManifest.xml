@@ -22,6 +22,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.final_project.socha.Game"
+            android:label="@string/title_activity_game" >
+        </activity>
+        <activity
+            android:name="com.final_project.socha.Scores"
+            android:label="@string/title_activity_scores" >
+        </activity>
+        <activity
+            android:name="com.final_project.socha.About"
+            android:label="@string/title_activity_about" >
+        </activity>
     </application>
 
 </manifest>
