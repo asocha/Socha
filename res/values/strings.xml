@@ -14,5 +14,8 @@
     <string name="title_activity_scores">Scores</string>
     <string name="title_activity_about">About</string>
     <string name="back">Back</string>
+    <string name="current">Current Win Streak</string>
+    <string name="most">Best Win Streak</string>
+    <string name="bestTimes">Best Times</string>
 
 </resources>

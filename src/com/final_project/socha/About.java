@@ -6,7 +6,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 
-public class About extends Activity implements View.OnClickListener{
+public class About extends Activity implements Button.OnClickListener{
 	private Button back;
 
 	@Override
@@ -15,6 +15,7 @@ public class About extends Activity implements View.OnClickListener{
 		setContentView(R.layout.activity_about);
 		
 		back = (Button) findViewById(R.id.back);
+		back.setOnClickListener(this);
 	}
 
 	@Override
@@ -26,8 +27,7 @@ public class About extends Activity implements View.OnClickListener{
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
-		
+		if (v == back) finish();
 	}
 
 }

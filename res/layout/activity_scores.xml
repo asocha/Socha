@@ -10,16 +10,59 @@
     android:orientation="vertical"
     android:gravity="center" >
 
-    <TextView
+    <TextView android:id="@+id/current"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:text="@string/current"
+        android:textSize="30sp" />
+    <TextView android:id="@+id/currentWins"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="30sp" />
     
-    <Button android:id="@+id/start"
+    <TextView android:id="@+id/most"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/most"
+        android:layout_marginTop="10dp"
+        android:textSize="30sp" />
+    <TextView android:id="@+id/mostWins"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="30sp" />
+    
+    <TextView android:id="@+id/bestTimes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bestTimes"
+        android:layout_marginTop="10dp"
+        android:textSize="30sp" />
+    <TextView android:id="@+id/time1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="30sp" />
+    <TextView android:id="@+id/time2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="28sp" />
+    <TextView android:id="@+id/time3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="27sp" />
+    <TextView android:id="@+id/time4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="27sp" />
+    <TextView android:id="@+id/time5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="27sp" />
+    
+    <Button android:id="@+id/back"
 	    android:layout_width="110dp"
 	    android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-	    android:text="@string/start"
+	    android:text="@string/back"
 	    android:background="#600F" />
 
 </LinearLayout>
