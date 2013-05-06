@@ -34,6 +34,14 @@
             android:name="com.final_project.socha.About"
             android:label="@string/title_activity_about" >
         </activity>
+        <activity
+            android:name="com.final_project.socha.PuzzleView"
+            android:label="@string/title_activity_puzzle_view" >
+        </activity>
+        <activity
+            android:name="com.final_project.socha.KeyPad"
+            android:label="@string/title_activity_key_pad" >
+        </activity>
     </application>
 
 </manifest>

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -35,11 +34,11 @@ public class Scores extends Activity implements Button.OnClickListener{
 		current.setText(String.valueOf(getIntent().getExtras().getInt("currentWon", 0)));
 		most.setText(String.valueOf(getIntent().getExtras().getInt("mostWon", 0)));
 		
-		time1.setText("1. " + times.get(0) % 60 + " minutes, " + times.get(1) / 60 + " seconds");
-		time2.setText("2. " + times.get(1) % 60 + " minutes, " + times.get(1) / 60 + " seconds");
-		time3.setText("3. " + times.get(2) % 60 + " minutes, " + times.get(1) / 60 + " seconds");
-		time4.setText("4. " + times.get(3) % 60 + " minutes, " + times.get(1) / 60 + " seconds");
-		time5.setText("5. " + times.get(4) % 60 + " minutes, " + times.get(1) / 60 + " seconds");
+		time1.setText("1. " + times.get(0) / 60 + " minutes, " + times.get(0) % 60 + " seconds");
+		time2.setText("2. " + times.get(1) / 60 + " minutes, " + times.get(1) % 60 + " seconds");
+		time3.setText("3. " + times.get(2) / 60 + " minutes, " + times.get(2) % 60 + " seconds");
+		time4.setText("4. " + times.get(3) / 60 + " minutes, " + times.get(3) % 60 + " seconds");
+		time5.setText("5. " + times.get(4) / 60 + " minutes, " + times.get(4) % 60 + " seconds");
 	}
 
 	@Override

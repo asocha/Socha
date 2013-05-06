@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Sudoku board based on example from "Hello, Android", published by The Pragmatic Bookshelf. http://www.pragmaticprogrammer.com/titles/eband3 -->
+
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/keypad"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:stretchColumns="*" >
+    
+    <TableRow>
+        <Button
+            android:id="@+id/keypad_1"
+            android:text="@string/key1" >
+        </Button>
+
+        <Button
+            android:id="@+id/keypad_2"
+            android:text="@string/key2" >
+        </Button>
+
+        <Button
+            android:id="@+id/keypad_3"
+            android:text="@string/key3" >
+        </Button>
+    </TableRow>
+
+    <TableRow>
+        <Button
+            android:id="@+id/keypad_4"
+            android:text="@string/key4" >
+        </Button>
+
+        <Button
+            android:id="@+id/keypad_5"
+            android:text="@string/key5" >
+        </Button>
+
+        <Button
+            android:id="@+id/keypad_6"
+            android:text="@string/key6" >
+        </Button>
+    </TableRow>
+
+    <TableRow>
+        <Button
+            android:id="@+id/keypad_7"
+            android:text="@string/key7" >
+        </Button>
+
+        <Button
+            android:id="@+id/keypad_8"
+            android:text="@string/key8" >
+        </Button>
+
+        <Button
+            android:id="@+id/keypad_9"
+            android:text="@string/key9" >
+        </Button>
+    </TableRow>
+
+</TableLayout>

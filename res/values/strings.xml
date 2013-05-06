@@ -17,5 +17,18 @@
     <string name="current">Current Win Streak</string>
     <string name="most">Best Win Streak</string>
     <string name="bestTimes">Best Times</string>
+    <string name="title_activity_puzzle_view">PuzzleView</string>
+    <string name="no_moves_label">It seems there are no valid moves remaining&#8230; perhaps you should check your work.</string>
+    <string name="title_activity_key_pad">KeyPad</string>
+    <string name="keypad_title">Key Pad</string>
+    <string name="key1">1</string>
+    <string name="key2">2</string>
+    <string name="key3">3</string>
+    <string name="key4">4</string>
+    <string name="key5">5</string>
+    <string name="key6">6</string>
+    <string name="key7">7</string>
+    <string name="key8">8</string>
+    <string name="key9">9</string>
 
 </resources>
