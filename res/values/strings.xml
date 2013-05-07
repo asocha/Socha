@@ -31,6 +31,9 @@
     <string name="key8">8</string>
     <string name="key9">9</string>
     <string name="hint">Hints</string>
-    <string name="pause">Pause</string>
+    <string name="save">Save</string>
+    <string name="easy">Easy</string>
+    <string name="medium">Medium</string>
+    <string name="hard">Hard</string>
 
 </resources>

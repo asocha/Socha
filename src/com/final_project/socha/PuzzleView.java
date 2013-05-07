@@ -71,9 +71,9 @@ public class PuzzleView extends View {
 
 		// Pick a hint color based on #moves left
 		if (hintsEnabled){
-			int c[] = { getResources().getColor(R.color.puzzle_hint_0),
-					getResources().getColor(R.color.puzzle_hint_1),
-					getResources().getColor(R.color.puzzle_hint_2)};
+			int c[] = {getResources().getColor(R.color.puzzle_hint_0),
+				getResources().getColor(R.color.puzzle_hint_1),
+				getResources().getColor(R.color.puzzle_hint_2)};
 			for (int i = 0; i < 9; i++) {
 				for (int j = 0; j < 9; j++) {
 					if (game.getTile(i, j) != 0) continue;
@@ -117,8 +117,7 @@ public class PuzzleView extends View {
 		float y = height / 2 - (fm.ascent + fm.descent) / 2;
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
-				canvas.drawText(this.game.getTileString(i, j), i * width + x, j
-					* height + y, foreground);
+				canvas.drawText(this.game.getTileString(i, j), i * width + x, j * height + y, foreground);
 			}
 		}
 	}
@@ -207,8 +206,7 @@ public class PuzzleView extends View {
 	}
 
 	private void getRect(int x, int y, Rect rect) {
-		rect.set((int) (x * width), (int) (y * height),
-			(int) (x * width + width), (int) (y * height + height));
+		rect.set((int)(x * width), (int)(y * height), (int)(x * width + width), (int)(y * height + height));
 	}
 
 }

@@ -10,12 +10,14 @@ import android.content.SharedPreferences;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 
 public class MainActivity extends Activity implements Button.OnClickListener{
-	private Button start, scores, about, quit;
+	private Button start, scores, about, quit, easy, medium, hard;
 	private ArrayList<Integer> times = new ArrayList<Integer>();
 	private int mostWon, currentWon;
 	private boolean continueGame;
+	private RelativeLayout difficulties;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -26,14 +28,22 @@ public class MainActivity extends Activity implements Button.OnClickListener{
 		scores = (Button) findViewById(R.id.scores);
 		about = (Button) findViewById(R.id.about);
 		quit = (Button) findViewById(R.id.quit);
+		easy = (Button) findViewById(R.id.easy);
+		medium = (Button) findViewById(R.id.medium);
+		hard = (Button) findViewById(R.id.hard);
 		
 		start.setOnClickListener(this);
 		scores.setOnClickListener(this);
 		about.setOnClickListener(this);
 		quit.setOnClickListener(this);
+		easy.setOnClickListener(this);
+		medium.setOnClickListener(this);
+		hard.setOnClickListener(this);
 		
-		//load times and win streak
-		SharedPreferences settings = getPreferences(0);
+		difficulties = (RelativeLayout) findViewById(R.id.difficulties);
+		
+		//load times, win streak, saved game
+		SharedPreferences settings = getPreferences(MODE_PRIVATE);
 		times.add(settings.getInt("time1", 3600));	//set to 1 hour if not loaded
 		times.add(settings.getInt("time2", 3600));
 		times.add(settings.getInt("time3", 3600));
@@ -55,9 +65,15 @@ public class MainActivity extends Activity implements Button.OnClickListener{
 	@Override
 	public void onClick(View v) {
 		if (v == start){
-			Intent intent = new Intent(this, Game.class);
-			if (continueGame) intent.putExtra(Game.KEY_DIFFICULTY, Game.DIFFICULTY_CONTINUE);
-			startActivityForResult(intent, 1);
+			if (continueGame){
+				Intent intent = new Intent(this, Game.class);
+				intent.putExtra(Game.KEY_DIFFICULTY, Game.DIFFICULTY_CONTINUE);
+				startActivityForResult(intent, 1);
+			}
+			else{
+				start.setVisibility(View.GONE);
+				difficulties.setVisibility(View.VISIBLE);
+			}
 		}
 		else if (v == scores){
 			Intent intent = new Intent(this, Scores.class);
@@ -73,6 +89,21 @@ public class MainActivity extends Activity implements Button.OnClickListener{
 		else if (v == quit){
 			finish();
 		}
+		else if (v == easy){
+			Intent intent = new Intent(this, Game.class);
+			intent.putExtra(Game.KEY_DIFFICULTY, Game.DIFFICULTY_EASY);
+			startActivityForResult(intent, 1);
+		}
+		else if (v == medium){
+			Intent intent = new Intent(this, Game.class);
+			intent.putExtra(Game.KEY_DIFFICULTY, Game.DIFFICULTY_MEDIUM);
+			startActivityForResult(intent, 1);
+		}
+		else if (v == hard){
+			Intent intent = new Intent(this, Game.class);
+			intent.putExtra(Game.KEY_DIFFICULTY, Game.DIFFICULTY_HARD);
+			startActivityForResult(intent, 1);
+		}
 	}
 	
 	@Override
@@ -80,15 +111,19 @@ public class MainActivity extends Activity implements Button.OnClickListener{
 		super.onActivityResult(requestCode, resultCode, data);
 		
 		if (requestCode == 1 && resultCode == RESULT_OK) {
+			start.setVisibility(View.VISIBLE);
+			difficulties.setVisibility(View.GONE);
+			
 			continueGame = data.getBooleanExtra("continueGame", false);
 			boolean won = data.getBooleanExtra("won", false);
 			int time = data.getIntExtra("time", 0);
 			if (won && time != 0){
 				times.add(time);
+				Collections.sort(times); //sort best times
 				currentWon++;
 				if (currentWon > mostWon) mostWon++;
 			}
-			else{
+			else if (!continueGame){
 				currentWon = 0;
 			}
 		}
@@ -97,9 +132,6 @@ public class MainActivity extends Activity implements Button.OnClickListener{
 	@Override
     protected void onPause(){
 		super.onPause();
-		
-		//sort best times
-		Collections.sort(times);
 
 		//save best times and win streak
 		SharedPreferences settings = getPreferences(MODE_PRIVATE);
@@ -111,8 +143,9 @@ public class MainActivity extends Activity implements Button.OnClickListener{
 		editor.putInt("time4", times.get(3));
 		editor.putInt("time5", times.get(4));
 		
-		editor.putInt("currentWon", 0);
-		editor.putInt("mostWon", 0);
+		editor.putInt("currentWon", currentWon);
+		editor.putInt("mostWon", mostWon);
+		editor.putBoolean("continueGame", continueGame);
 		
 		editor.commit();
     }

@@ -21,7 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Game extends Activity implements View.OnClickListener{
+public class Game extends Activity implements Button.OnClickListener{
 	public static final String KEY_DIFFICULTY = "com.example.sudoku.difficulty";
 	private static final String PREF_PUZZLE = "puzzle" ;
 	public static final int DIFFICULTY_EASY = 0;
@@ -41,7 +41,7 @@ public class Game extends Activity implements View.OnClickListener{
 	private int time;
 	private CountDownTimer timer;
 	private TextView timeField;
-	private Button hint, quit, pause;
+	private Button hint, quit, save;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +53,11 @@ public class Game extends Activity implements View.OnClickListener{
 		timeField = (TextView) findViewById(R.id.timeField);
 		hint = (Button) findViewById(R.id.hint);
 		quit = (Button) findViewById(R.id.quit);
-		pause = (Button) findViewById(R.id.pause);
+		save = (Button) findViewById(R.id.save);
 		
 		hint.setOnClickListener(this);
 		quit.setOnClickListener(this);
-		pause.setOnClickListener(this);
+		save.setOnClickListener(this);
 		
 		int diff = getIntent().getIntExtra(KEY_DIFFICULTY, DIFFICULTY_EASY); //load saved puzzle if available
 		puzzle = getPuzzle(diff);
@@ -84,22 +84,19 @@ public class Game extends Activity implements View.OnClickListener{
 		LinearLayout game = (LinearLayout) findViewById(R.id.game);
 		game.addView(puzzleView, 1, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 800));
 		puzzleView.requestFocus();
-
-		// If the activity is restarted, do a continue next time
-		getIntent().putExtra(KEY_DIFFICULTY, DIFFICULTY_CONTINUE);
 	}
 
 	@Override
 	public void onClick(View v){
 		if (v == quit){
 			Intent returnIntent = new Intent();
-	        returnIntent.putExtra("time",time);
-	        returnIntent.putExtra("won",false);
+	        returnIntent.putExtra("time", time);
+	        returnIntent.putExtra("won", false);
 	        returnIntent.putExtra("continueGame", false);
 	        setResult(RESULT_OK,returnIntent);        
 	        finish();
 		}
-		else if (v == pause){
+		else if (v == save){
 			Intent returnIntent = new Intent();
 	        returnIntent.putExtra("time",time);
 	        returnIntent.putExtra("won",false);
@@ -206,7 +203,7 @@ public class Game extends Activity implements View.OnClickListener{
 	/** Open the keypad if there are any valid moves */
 	protected void showKeypadOrError(int x, int y) {
 		int tiles[] = getUsedTiles(x, y);
-		if (tiles.length == 9) {
+		if (getTile(x, y) == 0 && tiles.length == 9) {
 			Toast toast = Toast.makeText(this, R.string.no_moves_label, Toast.LENGTH_SHORT);
 			toast.setGravity(Gravity.CENTER, 0, 0);
 			toast.show();
@@ -235,15 +232,10 @@ public class Game extends Activity implements View.OnClickListener{
 			}
 		}
 		if (won){	//user won the game!
+			timer.cancel();
+			
 			Dialog dialog = new Dialog(this);
 			dialog.setTitle("You won!");
-			try {
-				timer.wait();
-			}
-			catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
 			dialog.setOnDismissListener(new DialogInterface.OnDismissListener(){
 				@Override
 				public void onDismiss(DialogInterface dialog){
@@ -263,43 +255,32 @@ public class Game extends Activity implements View.OnClickListener{
 		int c[] = new int[9];
 		// horizontal
 		for (int i = 0; i < 9; i++) {
-			if (i == x)
-				continue;
 			int t = getTile(i, y);
-			if (t != 0)
-				c[t - 1] = t;
+			if (t != 0) c[t - 1] = t;
 		}
 		// vertical
 		for (int i = 0; i < 9; i++) {
-			if (i == y)
-				continue;
 			int t = getTile(x, i);
-			if (t != 0)
-				c[t - 1] = t;
+			if (t != 0) c[t - 1] = t;
 		}
 		// same cell block
 		int startx = (x / 3) * 3;
 		int starty = (y / 3) * 3;
 		for (int i = startx; i < startx + 3; i++) {
 			for (int j = starty; j < starty + 3; j++) {
-				if (i == x && j == y)
-					continue;
 				int t = getTile(i, j);
-				if (t != 0)
-					c[t - 1] = t;
+				if (t != 0) c[t - 1] = t;
 			}
 		}
 		// compress
 		int nused = 0;
 		for (int t : c) {
-			if (t != 0)
-				nused++;
+			if (t != 0) nused++;
 		}
 		int c1[] = new int[nused];
 		nused = 0;
 		for (int t : c) {
-			if (t != 0)
-				c1[nused++] = t;
+			if (t != 0) c1[nused++] = t;
 		}
 		return c1;
 	}
