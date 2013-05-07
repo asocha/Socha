@@ -12,27 +12,24 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Paint.Style;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
 public class PuzzleView extends View {
-	private static final String TAG = "Sudoku";
-
 	private float width; // width of one tile
 	private float height; // height of one tile
-	private int selX; // X index of selection
-	private int selY; // Y index of selection
+	protected int selX; // X index of selection
+	protected int selY; // Y index of selection
 	private final Rect selRect = new Rect();
 	
-	//private Rect r = new Rect();
-	Paint paint = new Paint();
+	private Rect r = new Rect();
+	private Paint paint = new Paint();	//general (background, hints, selected, etc.)
+	private Paint dark = new Paint();	//large grid lines
+	private Paint light = new Paint();	//small grid lines
+	private Paint foreground = new Paint(Paint.ANTI_ALIAS_FLAG);	//numbers
 	
-	Paint dark = new Paint();	//large grid lines
-	//Paint hilite = new Paint();
-	Paint light = new Paint();	//small grid lines
-	Paint foreground = new Paint(Paint.ANTI_ALIAS_FLAG);	//numbers
+	protected boolean hintsEnabled;
 	
 	private final Game game;
 
@@ -42,9 +39,10 @@ public class PuzzleView extends View {
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 		
+		hintsEnabled = false;
+		
 		// Define colors for the grid lines
 		dark.setColor(getResources().getColor(R.color.puzzle_dark));
-		//hilite.setColor(getResources().getColor(R.color.puzzle_hilite));
 		light.setColor(getResources().getColor(R.color.puzzle_light));
 		
 		// Define color and style for numbers
@@ -58,7 +56,6 @@ public class PuzzleView extends View {
 		width = (w-1) / 9f;
 		height = (h-1) / 9f;
 		getRect(selX, selY, selRect);
-		//Log.d(TAG, "onSizeChanged: width " + width + ", height " + height);
 		super.onSizeChanged(w, h, oldw, oldh);
 	}
 
@@ -70,21 +67,42 @@ public class PuzzleView extends View {
 
 		// Draw the board...
 		
+		// Draw the hints...
+
+		// Pick a hint color based on #moves left
+		if (hintsEnabled){
+			int c[] = { getResources().getColor(R.color.puzzle_hint_0),
+					getResources().getColor(R.color.puzzle_hint_1),
+					getResources().getColor(R.color.puzzle_hint_2)};
+			for (int i = 0; i < 9; i++) {
+				for (int j = 0; j < 9; j++) {
+					if (game.getTile(i, j) != 0) continue;
+					int movesleft = 9 - game.getUsedTiles(i, j).length;
+					if (movesleft <= c.length) {
+						getRect(i, j, r);
+						paint.setColor(c[movesleft-1]);
+						canvas.drawRect(r, paint);
+					}
+				}
+			}
+		}
+		
+		// Draw the selection...
+
+		paint.setColor(getResources().getColor(R.color.puzzle_selected));
+		canvas.drawRect(selRect, paint);
+		
 		// Draw the minor grid lines
-		for (int i = 0; i <= 9; i++) {
+		for (int i = 1; i < 9; i++) {
+			if (i % 3 == 0)
+				continue;
 			canvas.drawLine(0, i * height, getWidth(), i * height, light);
-			//canvas.drawLine(0, i * height + 1, getWidth(), i * height + 1, hilite);
 			canvas.drawLine(i * width, 0, i * width, getHeight(), light);
-			//canvas.drawLine(i * width + 1, 0, i * width + 1, getHeight(), hilite);
 		}
 		// Draw the major grid lines
-		for (int i = 0; i <= 9; i++) {
-			if (i % 3 != 0)
-				continue;
+		for (int i = 0; i <= 9; i+=3) {
 			canvas.drawLine(0, i * height, getWidth(), i * height, dark);
-			//canvas.drawLine(0, i * height + 1, getWidth(), i * height + 1, hilite);
 			canvas.drawLine(i * width, 0, i * width, getHeight(), dark);
-			//canvas.drawLine(i * width + 1, 0, i * width + 1, getHeight(), hilite);
 		}
 
 		// Draw the numbers...
@@ -100,33 +118,9 @@ public class PuzzleView extends View {
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
 				canvas.drawText(this.game.getTileString(i, j), i * width + x, j
-						* height + y, foreground);
+					* height + y, foreground);
 			}
 		}
-		/*
-		// Draw the hints...
-
-		// Pick a hint color based on #moves left
-		int c[] = { getResources().getColor(R.color.puzzle_hint_0),
-				getResources().getColor(R.color.puzzle_hint_1),
-				getResources().getColor(R.color.puzzle_hint_2), };
-		for (int i = 0; i < 9; i++) {
-			for (int j = 0; j < 9; j++) {
-				int movesleft = 9 - game.getUsedTiles(i, j).length;
-				if (movesleft < c.length) {
-					getRect(i, j, r);
-					paint.setColor(c[movesleft]);
-					canvas.drawRect(r, paint);
-				}
-			}
-		}
-		*/
-		// Draw the selection...
-
-		//Log.d(TAG, "selRect=" + selRect);
-		paint.setColor(getResources().getColor(R.color.puzzle_selected));
-		canvas.drawRect(selRect, paint);
-
 	}
 
 	@Override
@@ -136,13 +130,11 @@ public class PuzzleView extends View {
 
 		select((int) (event.getX() / width), (int) (event.getY() / height));
 		game.showKeypadOrError(selX, selY);
-		Log.d(TAG, "onTouchEvent: x " + selX + ", y " + selY);
 		return true;
 	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		Log.d(TAG, "onKeyDown: keycode=" + keyCode + ", event=" + event);
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_DPAD_UP:
 			select(selX, selY - 1);
@@ -200,8 +192,10 @@ public class PuzzleView extends View {
 	}
 
 	public void setSelectedTile(int tile) {
-		game.setTile(selX, selY, tile);
-		invalidate();// may change hints
+		if (game.getTile(selX, selY) == 0){
+			game.setTile(selX, selY, tile);
+			invalidate();// may change hints
+		}
 	}
 
 	private void select(int x, int y) {
@@ -214,7 +208,7 @@ public class PuzzleView extends View {
 
 	private void getRect(int x, int y, Rect rect) {
 		rect.set((int) (x * width), (int) (y * height),
-				(int) (x * width + width), (int) (y * height + height));
+			(int) (x * width + width), (int) (y * height + height));
 	}
 
 }

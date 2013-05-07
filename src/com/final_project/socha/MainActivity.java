@@ -15,6 +15,7 @@ public class MainActivity extends Activity implements Button.OnClickListener{
 	private Button start, scores, about, quit;
 	private ArrayList<Integer> times = new ArrayList<Integer>();
 	private int mostWon, currentWon;
+	private boolean continueGame;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,7 @@ public class MainActivity extends Activity implements Button.OnClickListener{
 		
 		currentWon = settings.getInt("currentWon", 0);
 		mostWon = settings.getInt("mostWon", 0);
+		continueGame = settings.getBoolean("continueGame", false);
 	}
 
 	@Override
@@ -54,6 +56,7 @@ public class MainActivity extends Activity implements Button.OnClickListener{
 	public void onClick(View v) {
 		if (v == start){
 			Intent intent = new Intent(this, Game.class);
+			if (continueGame) intent.putExtra(Game.KEY_DIFFICULTY, Game.DIFFICULTY_CONTINUE);
 			startActivityForResult(intent, 1);
 		}
 		else if (v == scores){
@@ -77,6 +80,7 @@ public class MainActivity extends Activity implements Button.OnClickListener{
 		super.onActivityResult(requestCode, resultCode, data);
 		
 		if (requestCode == 1 && resultCode == RESULT_OK) {
+			continueGame = data.getBooleanExtra("continueGame", false);
 			boolean won = data.getBooleanExtra("won", false);
 			int time = data.getIntExtra("time", 0);
 			if (won && time != 0){
@@ -98,7 +102,7 @@ public class MainActivity extends Activity implements Button.OnClickListener{
 		Collections.sort(times);
 
 		//save best times and win streak
-		SharedPreferences settings = getPreferences(0);
+		SharedPreferences settings = getPreferences(MODE_PRIVATE);
 		SharedPreferences.Editor editor = settings.edit();
 		
 		editor.putInt("time1", times.get(0));

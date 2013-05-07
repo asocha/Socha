@@ -13,18 +13,13 @@ import android.view.KeyEvent;
 import android.view.View;
 
 public class Keypad extends Dialog {
-
-	protected static final String TAG = "Sudoku";
-
 	private final View keys[] = new View[9];
 	private View keypad;
 
-	private final int useds[];
 	private final PuzzleView puzzleView;
 
-	public Keypad(Context context, int useds[], PuzzleView puzzleView) {
+	public Keypad(Context context, PuzzleView puzzleView) {
 		super(context);
-		this.useds = useds;
 		this.puzzleView = puzzleView;
 	}
 
@@ -35,12 +30,6 @@ public class Keypad extends Dialog {
 		setTitle(R.string.keypad_title);
 		setContentView(R.layout.keypad);
 		findViews();
-		/*
-		for (int element : useds) {
-			if (element != 0)
-				keys[element - 1].setVisibility(View.INVISIBLE);
-		}
-		*/
 		setListeners();
 	}
 
@@ -82,9 +71,8 @@ public class Keypad extends Dialog {
 		default:
 			return super.onKeyDown(keyCode, event);
 		}
-		if (isValid(tile)) {
-			returnResult(tile);
-		}
+		
+		returnResult(tile);
 		return true;
 
 	}
@@ -93,14 +81,6 @@ public class Keypad extends Dialog {
 	private void returnResult(int tile) {
 		puzzleView.setSelectedTile(tile);
 		dismiss();
-	}
-
-	private boolean isValid(int tile) {
-		for (int t : useds) {
-			if (tile == t)
-				return false;
-		}
-		return true;
 	}
 
 	private void findViews() {

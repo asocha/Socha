@@ -11,8 +11,34 @@
     android:id="@+id/game" >
 
     <TextView android:id="@+id/timeField"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="right" />
+        android:layout_gravity="right"
+        android:textSize="15sp"
+        android:layout_marginBottom="10dp" />
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:layout_marginTop="10dp" >
+    	
+        <Button android:id="@+id/hint"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/hint" />
+        
+        <Button android:id="@+id/pause"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/pause"
+	        android:layout_centerHorizontal="true" />
+        
+	    <Button android:id="@+id/quit"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/quit"
+	        android:layout_alignParentRight="true" />
+	    
+    </RelativeLayout>
 
 </LinearLayout>

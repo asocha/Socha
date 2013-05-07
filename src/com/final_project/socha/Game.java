@@ -10,17 +10,18 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Game extends Activity {
-	private static final String TAG = "Sudoku";
+public class Game extends Activity implements View.OnClickListener{
 	public static final String KEY_DIFFICULTY = "com.example.sudoku.difficulty";
 	private static final String PREF_PUZZLE = "puzzle" ;
 	public static final int DIFFICULTY_EASY = 0;
@@ -38,8 +39,9 @@ public class Game extends Activity {
 		+ "000000700706040102004000000" + "000720903090301080000000600";
 	
 	private int time;
-	private boolean won;
+	private CountDownTimer timer;
 	private TextView timeField;
+	private Button hint, quit, pause;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +49,22 @@ public class Game extends Activity {
 		setContentView(R.layout.activity_game);
 		
 		time = 0;
-		won = false;
 		
 		timeField = (TextView) findViewById(R.id.timeField);
+		hint = (Button) findViewById(R.id.hint);
+		quit = (Button) findViewById(R.id.quit);
+		pause = (Button) findViewById(R.id.pause);
 		
-		new CountDownTimer(3600000, 1000) {	//creates an hour-long countdown timer
+		hint.setOnClickListener(this);
+		quit.setOnClickListener(this);
+		pause.setOnClickListener(this);
+		
+		int diff = getIntent().getIntExtra(KEY_DIFFICULTY, DIFFICULTY_EASY); //load saved puzzle if available
+		puzzle = getPuzzle(diff);
+		calculateUsedTiles();
+		
+		//create an hour-long countdown timer (subtract loaded time passed)
+		timer = new CountDownTimer(3600000 - time * 1000, 1000) {
 		    @Override
 			public void onTick(long millisUntilFinished) {
 		    	//convert the countdown timer into a countup timer
@@ -65,11 +78,8 @@ public class Game extends Activity {
 		        time = 3600;
 		    }
 		}.start();
-		
-		int diff = getIntent().getIntExtra(KEY_DIFFICULTY, DIFFICULTY_EASY);
-		puzzle = getPuzzle(diff);
-		calculateUsedTiles();
 
+		//add puzzle board
 		puzzleView = new PuzzleView(this);
 		LinearLayout game = (LinearLayout) findViewById(R.id.game);
 		game.addView(puzzleView, 1, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 800));
@@ -80,35 +90,56 @@ public class Game extends Activity {
 	}
 
 	@Override
+	public void onClick(View v){
+		if (v == quit){
+			Intent returnIntent = new Intent();
+	        returnIntent.putExtra("time",time);
+	        returnIntent.putExtra("won",false);
+	        returnIntent.putExtra("continueGame", false);
+	        setResult(RESULT_OK,returnIntent);        
+	        finish();
+		}
+		else if (v == pause){
+			Intent returnIntent = new Intent();
+	        returnIntent.putExtra("time",time);
+	        returnIntent.putExtra("won",false);
+	        returnIntent.putExtra("continueGame", true);
+	        setResult(RESULT_OK,returnIntent);
+	        
+	        // Save the current puzzle and time
+			getPreferences(MODE_PRIVATE).edit()
+				.putString(PREF_PUZZLE, toPuzzleString(puzzle))
+				.putInt("time",time).commit();
+			
+	        finish();
+		}
+		else if (v == hint){
+			puzzleView.hintsEnabled = !puzzleView.hintsEnabled;
+			puzzleView.invalidate();
+		}
+	}
+	
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.game, menu);
 		return true;
 	}
-	
-	@Override
-	public void onBackPressed() {
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra("time",time);
-        returnIntent.putExtra("won",won);
-        setResult(RESULT_OK,returnIntent);        
-        finish();
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		//Music.play(this, R.raw.game);
-	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		Log.d(TAG, "onPause");
-		//Music.stop(this);
-		// Save the current puzzle
+		
+		Intent returnIntent = new Intent();
+        returnIntent.putExtra("time",time);
+        returnIntent.putExtra("won",false);
+        returnIntent.putExtra("continueGame", true);
+        setResult(RESULT_OK,returnIntent);        
+        
+		// Save the current puzzle and time
 		getPreferences(MODE_PRIVATE).edit()
-				.putString(PREF_PUZZLE, toPuzzleString(puzzle)).commit();
+			.putString(PREF_PUZZLE, toPuzzleString(puzzle))
+			.putInt("time",time).commit();
 	}
 
 	/** Given a difficulty level, come up with a new puzzle */
@@ -116,8 +147,8 @@ public class Game extends Activity {
 		String puz;
 		switch (diff) {
 		case DIFFICULTY_CONTINUE:
-			puz = getPreferences(MODE_PRIVATE).getString(PREF_PUZZLE,
-					easyPuzzle);
+			puz = getPreferences(MODE_PRIVATE).getString(PREF_PUZZLE, easyPuzzle);
+			time = getPreferences(MODE_PRIVATE).getInt("time",0);
 			break;
 		case DIFFICULTY_HARD:
 			puz = hardPuzzle;
@@ -153,7 +184,7 @@ public class Game extends Activity {
 	}
 
 	/** Return the tile at the given coordinates */
-	private int getTile(int x, int y) {
+	protected int getTile(int x, int y) {
 		return puzzle[y * 9 + x];
 	}
 
@@ -176,13 +207,12 @@ public class Game extends Activity {
 	protected void showKeypadOrError(int x, int y) {
 		int tiles[] = getUsedTiles(x, y);
 		if (tiles.length == 9) {
-			Toast toast = Toast.makeText(this, R.string.no_moves_label,
-					Toast.LENGTH_SHORT);
+			Toast toast = Toast.makeText(this, R.string.no_moves_label, Toast.LENGTH_SHORT);
 			toast.setGravity(Gravity.CENTER, 0, 0);
 			toast.show();
-		} else if (getTile(x, y) == 0){
-			Log.d(TAG, "showKeypad: used=" + toPuzzleString(tiles));
-			Dialog v = new Keypad(this, tiles, puzzleView);
+		}
+		else if (getTile(x, y) == 0){
+			Dialog v = new Keypad(this, puzzleView);
 			v.show();
 		}
 	}
@@ -197,11 +227,34 @@ public class Game extends Activity {
 
 	/** Compute the two dimensional array of used tiles */
 	private void calculateUsedTiles() {
+		boolean won = true;
 		for (int x = 0; x < 9; x++) {
 			for (int y = 0; y < 9; y++) {
 				used[x][y] = calculateUsedTiles(x, y);
-				// Log.d(TAG, "used[" + x + "][" + y + "] = " + toPuzzleString(used[x][y]));
+				if (used[x][y].length != 9) won = false;
 			}
+		}
+		if (won){	//user won the game!
+			Dialog dialog = new Dialog(this);
+			dialog.setTitle("You won!");
+			try {
+				timer.wait();
+			}
+			catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			dialog.setOnDismissListener(new DialogInterface.OnDismissListener(){
+				@Override
+				public void onDismiss(DialogInterface dialog){
+					Intent returnIntent = new Intent();
+			        returnIntent.putExtra("time",time);
+			        returnIntent.putExtra("won",true);
+			        setResult(RESULT_OK,returnIntent);        
+			        finish();
+				}
+			});
+			dialog.show();
 		}
 	}
 
