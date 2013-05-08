@@ -193,7 +193,7 @@ public class PuzzleView extends View {
 	public void setSelectedTile(int tile) {
 		if (game.getTile(selX, selY) == 0){
 			game.setTile(selX, selY, tile);
-			invalidate();// may change hints
+			invalidate(); //may change hints
 		}
 	}
 

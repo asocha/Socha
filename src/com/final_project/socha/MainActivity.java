@@ -42,7 +42,7 @@ public class MainActivity extends Activity implements Button.OnClickListener{
 		
 		difficulties = (RelativeLayout) findViewById(R.id.difficulties);
 		
-		//load times, win streak, saved game
+		//load best times, win streak, saved game
 		SharedPreferences settings = getPreferences(MODE_PRIVATE);
 		times.add(settings.getInt("time1", 3600));	//set to 1 hour if not loaded
 		times.add(settings.getInt("time2", 3600));
@@ -117,15 +117,16 @@ public class MainActivity extends Activity implements Button.OnClickListener{
 			continueGame = data.getBooleanExtra("continueGame", false);
 			boolean won = data.getBooleanExtra("won", false);
 			int time = data.getIntExtra("time", 0);
-			if (won && time != 0){
+			if (won && time != 0){ //player won game, update stats
 				times.add(time);
 				Collections.sort(times); //sort best times
 				currentWon++;
 				if (currentWon > mostWon) mostWon++;
 			}
-			else if (!continueGame){
+			else if (!continueGame){ //player lost game
 				currentWon = 0;
 			}
+			//do nothing if player saved game
 		}
 	}
 	
@@ -133,7 +134,7 @@ public class MainActivity extends Activity implements Button.OnClickListener{
     protected void onPause(){
 		super.onPause();
 
-		//save best times and win streak
+		//save best times, win streaks, and saved game
 		SharedPreferences settings = getPreferences(MODE_PRIVATE);
 		SharedPreferences.Editor editor = settings.edit();
 		

@@ -23,7 +23,7 @@ import android.widget.Toast;
 
 public class Game extends Activity implements Button.OnClickListener{
 	public static final String KEY_DIFFICULTY = "com.example.sudoku.difficulty";
-	private static final String PREF_PUZZLE = "puzzle" ;
+	private static final String PREF_PUZZLE = "puzzle";
 	public static final int DIFFICULTY_EASY = 0;
 	public static final int DIFFICULTY_MEDIUM = 1;
 	public static final int DIFFICULTY_HARD = 2;
@@ -31,6 +31,7 @@ public class Game extends Activity implements Button.OnClickListener{
 	private int puzzle[];
 	private PuzzleView puzzleView;
 
+	//pre-programmed puzzles
 	private final String easyPuzzle = "360000000004230800000004200"
 		+ "070460003820000014500013020" + "001900000007048300000000045";
 	private final String mediumPuzzle = "650000070000506000014000005"
@@ -143,7 +144,7 @@ public class Game extends Activity implements Button.OnClickListener{
 	private int[] getPuzzle(int diff) {
 		String puz;
 		switch (diff) {
-		case DIFFICULTY_CONTINUE:
+		case DIFFICULTY_CONTINUE: //load saved game
 			puz = getPreferences(MODE_PRIVATE).getString(PREF_PUZZLE, easyPuzzle);
 			time = getPreferences(MODE_PRIVATE).getInt("time",0);
 			break;
@@ -194,13 +195,11 @@ public class Game extends Activity implements Button.OnClickListener{
 	/** Return a string for the tile at the given coordinates */
 	protected String getTileString(int x, int y) {
 		int v = getTile(x, y);
-		if (v == 0)
-			return "";
-		else
-			return String.valueOf(v);
+		if (v == 0) return "";
+		else return String.valueOf(v);
 	}
 
-	/** Open the keypad if there are any valid moves */
+	/** Open the keypad if user clicked blank tile and there are any valid moves */
 	protected void showKeypadOrError(int x, int y) {
 		int tiles[] = getUsedTiles(x, y);
 		if (getTile(x, y) == 0 && tiles.length == 9) {
